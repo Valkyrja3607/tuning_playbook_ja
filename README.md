@@ -143,7 +143,7 @@
 </details>
 
 
-<a id="#choosing-the-batch-size-to-minimize-training-time"></a>
+<a id="choosing-the-batch-size-to-minimize-training-time"></a>
 #### 学習時間を最小にするためのバッチサイズの選択
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -167,7 +167,7 @@
 
 </details>
 
-<a id="#choosing-the-batch-size-to-minimize-resource-consumption"></a>
+<a id="choosing-the-batch-size-to-minimize-resource-consumption"></a>
 #### リソース消費を最小化するバッチサイズの選択
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -177,7 +177,7 @@
 -   バッチサイズを大きくすることで発生するリソースコストは2種類あります:
     1. 初期費用：新しいハードウェアの購入や，マルチGPU/マルチTPUトレーニングを実装するためのトレーニングパイプラインの書き換えなど．
     2. 利用コスト：チームのリソース予算に対する課金，クラウドプロバイダーからの課金，電気代やメンテナンス費用など．
--   バッチサイズの増加に大きな初期費用がかかる場合は，プロジェクトが成熟し，費用対効果のトレードオフを評価しやすくなるまで，バッチサイズの増加を延期する方がよいでしょう．マルチホスト並列トレーニングプログラムの実装は，[バグ](#considerations-for-multi-host-pipelines)や[微妙な問題](#batch-normalization-implementation-details)を引き起こす可能性があるため，いずれにせよ，よりシンプルなパイプラインから始める方がよいでしょう．(一方，学習時間の大幅な高速化は，多くのチューニング実験が必要な初期段階において非常に有効です）．
+-   バッチサイズの増加に大きな初期費用がかかる場合は，プロジェクトが成熟し，費用対効果のトレードオフを評価しやすくなるまで，バッチサイズの増加を延期する方がよいでしょう．マルチホスト並列トレーニングプログラムの実装は，[バグ](#Considerations-for-multi-host-pipelines)や[微妙な問題](#Batch-normalization-implementation-details)を引き起こす可能性があるため，いずれにせよ，よりシンプルなパイプラインから始める方がよいでしょう．(一方，学習時間の大幅な高速化は，多くのチューニング実験が必要な初期段階において非常に有効です）．
 -   ここでは，総使用コスト（複数の異なる種類のコストを含む）を「リソース消費量」と呼ぶことにします．資源消費は次のような要素に分解できる．
 
 <p align="center">リソース消費量 = (ステップごとのリソース消費量) x (総ステップ数)</p>
@@ -210,7 +210,7 @@ How batch norm interacts with the batch size
 
 <br>
 
--   バッチノルムは複雑で，一般的には勾配計算とは異なるバッチサイズを使用して統計量を計算する必要があります．詳細な議論は[バッチノルムのセクション](#batch-normalization-implementation-details)を参照してください．
+-   バッチノルムは複雑で，一般的には勾配計算とは異なるバッチサイズを使用して統計量を計算する必要があります．詳細な議論は[バッチノルムのセクション](#Batch-normalization-implementation-details)を参照してください．
 
 </details>
 
@@ -362,7 +362,7 @@ How batch norm interacts with the batch size
 -   スタディの目的は，科学的ハイパーパラメータの異なる値間の比較ができるだけ公平になるように，迷惑ハイパーパラメータを **「排除」**（または「最適化」）すると同時に，科学的ハイパーパラメータの異なる値でパイプラインを実行することにあります．
 -   最も単純なケースでは，科学的パラメータの各構成に対して別々のスタディを行い，それぞれのスタディが迷惑ハイパーパラメータを調整することになります．
     -   例えば，Nesterov momentumとAdamの中から最適なオプティマイザを選択することが目的である場合，`optimizer="Nesterov_momentum"`，迷惑ハイパーパラメータは`{learning_rate, momentum}`とするスタディを作成し，もう一つのスタディは，`optimizer="Adam"`，迷惑ハイパーパラメータは`{learning_rate, beta1, beta2, epsilon}`とするスタディです．それぞれのスタディから最もパフォーマンスの良いトライアルを選択することで，2つのオプティマイザを比較することになります．
-    -   ベイズ最適化や進化的アルゴリズムなどの勾配なし最適化アルゴリズムを使用して，迷惑ハイパーパラメータを最適化することができます．ただし，チューニングの[探索段階](#exploration-vs-exploitation)では，この設定におけるさまざまな利点から，準ランダム探索の使用を[推奨](#why-use-quasi-random-search-instead-of-more-sophisticated-black-box-optimization-algorithms-during-the-exploration-phase-of-tuning)しています．[探索が終わった後](#after-exploration-concludes)，もし最新のベイズ最適化ソフトウェアが利用できるのであれば，そちらを使用することをお勧めします．
+    -   ベイズ最適化や進化的アルゴリズムなどの勾配なし最適化アルゴリズムを使用して，迷惑ハイパーパラメータを最適化することができます．ただし，チューニングの[探索段階](#exploration-vs-exploitation)では，この設定におけるさまざまな利点から，準ランダム探索の使用を[推奨](#why-use-quasi-random-search-instead-of-more-sophisticated-black-box-optimization-algorithms-during-the-exploration-phase-of-tuning)しています．[探索が終わった後](#After-exploration-concludes)，もし最新のベイズ最適化ソフトウェアが利用できるのであれば，そちらを使用することをお勧めします．
 -   科学的ハイパーパラメータの多数の値を比較したいが，それほど多くの独立したスタディを行うのは現実的でない，より複雑なケースでは，科学的パラメータを迷惑ハイパーパラメータと同じ探索空間に含め，探索アルゴリズムを使って一回のスタディで科学的ハイパーパラメータと迷惑ハイパーパラメータの両方の値をサンプルすることができます．
     -   このアプローチをとる場合，条件付きハイパーパラメータは，迷惑ハイパーパラメータのセットが科学的ハイパーパラメータのすべての値に対して同じでない限り，探索空間を指定することが困難であるため，問題が発生する可能性があります．
     -   この場合，ブラックボックス最適化ツールよりも準ランダム探索の方が，科学的ハイパーパラメータの値のサンプリングが比較的均一であるため，より[好ましい](#why-use-quasi-random-search-instead-of-more-sophisticated-black-box-optimization-algorithms-during-the-exploration-phase-of-tuning)と言えます．どのような探索アルゴリズムであっても，科学的パラメータを一様に探索することを何とか確認する必要があります．
@@ -389,7 +389,7 @@ How batch norm interacts with the batch size
         -   そうでなければ，迷惑ハイパーパラメータのサンプリングで幸運になった値があるため，科学的パラメータの値の間で不公平な比較をすることになるかもしれません．
 -   残念ながら，これら3つの次元のいずれかを改善するには，試行回数を増やしてリソースコストを上げるか，他の次元でリソースを節約する方法を見つける必要があります．
     -   どの問題にも特有の性質や計算上の制約があるため，これら3つの要望に対してどのようにリソースを配分するかは，ある程度専門的な知識が必要です．
-    -   スタディを実行した後，我々は常にそのスタディが迷惑ハイパーパラメータを十分に調整したかどうか（すなわち，十分に広い空間を十分に広範に探索したかどうか）を把握し，科学的ハイパーパラメータ（[以下](#extracting-insight-from-experimental-results)でさらに詳細に説明する）を公正に比較しようと努めています．
+    -   スタディを実行した後，我々は常にそのスタディが迷惑ハイパーパラメータを十分に調整したかどうか（すなわち，十分に広い空間を十分に広範に探索したかどうか）を把握し，科学的ハイパーパラメータ（[以下](#Extracting-insight-from-experimental-results)でさらに詳細に説明する）を公正に比較しようと努めています．
 
 </details>
 
@@ -417,7 +417,7 @@ How batch norm interacts with the batch size
 -   上記の質問に答えることができたら，本来の目的に向かって実験が提供する証拠の評価（例えば，[変更が有用かどうかの評価](#detecting-whether-a-change-is-useful-with-isolation-plots)）に移ることができる．
 
 
-<a id="Identifying-bad-search-space-boundaries"></a>
+<a id="identifying-bad-search-space-boundaries"></a>
 #### 悪い探索空間の境界を特定する
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -442,7 +442,7 @@ How batch norm interacts with the batch size
 
 </details>
 
-<a id="Not-sampling-enough-points-in-the-search-space"></a>
+<a id="not-sampling-enough-points-in-the-search-space"></a>
 #### 探索空間内の十分な点のサンプリングが行われていない
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -455,7 +455,7 @@ How batch norm interacts with the batch size
 
 </details>
 
-<a id="Examining-the-training-curves"></a>
+<a id="examining-the-training-curves"></a>
 #### トレーニングカーブのバリデーション
 
 ***要約:*** *トレーニングカーブを調べることは，一般的な故障モードを特定する簡単な方法であり，次に取るべきアクションの優先順位を決めるのに役立ちます．*
@@ -480,14 +480,14 @@ How batch norm interacts with the batch size
     -   ステップ間分散の最も可能性の高い原因は，バッチ間分散（バッチごとにトレーニングセットからランダムにサンプルを抽出することによる），小さなバリデーションセット，トレーニングの後半で高すぎる学習率を使用することです．
     -   改善策としては，バッチサイズを大きくする，バリデーションデータを増やす，学習率の減衰を利用する，ポリアク平均を利用する，などが考えられる．
 -   トレーニングが終了した時点でも試行回数が増加していますか？
-    -   もしそうなら，これは[「計算限界」領域](#determining-the-number-of-steps-for-each-training-run)に入っていることを示しており，[トレーニングステップ数を増やす](#Deciding-how-long-to-train-when-training-is-compute-bound)か，学習率のスケジュールを変更することで効果が得られる可能性があります．
+    -   もしそうなら，これは[「計算限界」領域](#Determining-the-number-of-steps-for-each-training-run)に入っていることを示しており，[トレーニングステップ数を増やす](#Deciding-how-long-to-train-when-training-is-compute-bound)か，学習率のスケジュールを変更することで効果が得られる可能性があります．
 -   トレーニングセットとバリデーションセットの性能が，トレーニングの最終ステップのずっと前に飽和していませんか？
-    -   もしそうであれば，[「計算限界に達していない」](#determining-the-number-of-steps-for-each-training-run)状態であり，[トレーニングステップの数を減らす](#deciding-how-long-to-train-when-training-is-not-compute-bound)ことができるかもしれません．
+    -   もしそうであれば，[「計算限界に達していない」](#Determining-the-number-of-steps-for-each-training-run)状態であり，[トレーニングステップの数を減らす](#Deciding-how-long-to-train-when-training-is-not-compute-bound)ことができるかもしれません．
 -   この他にも，トレーニングカーブを調べることで明らかになる現象は数多くあります（例えば，トレーニング中にトレーニングロスが増加する場合は，通常トレーニングパイプラインにバグがあることを示しています）．
 
 </details>
 
-<a id="Detecting-whether-a-change-is-useful-with-isolation-plots"></a>
+<a id="detecting-whether-a-change-is-useful-with-isolation-plots"></a>
 #### 分離プロットによる変更が有効かどうかの検出
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -726,7 +726,7 @@ trained on ImageNet.">
 
 <br>
 
--   トレーニング中に定期的な評価を行うことで，トレーニングの進捗をリアルタイムに監視し，[レトロスペクティブなモデルのチェックポイント選択](#saving-checkpoints-and-retrospectively-selecting-the-best-checkpoint)を容易にし，[トレーニング終了時にトレーニングカーブを検証](#examining-the-training-curves)できるようにします．
+-   トレーニング中に定期的な評価を行うことで，トレーニングの進捗をリアルタイムに監視し，[レトロスペクティブなモデルのチェックポイント選択](#Saving-checkpoints-and-retrospectively-selecting-the-best-checkpoint)を容易にし，[トレーニング終了時にトレーニングカーブを検証](#examining-the-training-curves)できるようにします．
 -   最も単純な構成は，トレーニングと定期的な評価の両方を同じ計算インスタンス内で行い，トレーニングと評価を周期的に交互に行うものです．
     -   この場合，評価時にモデルのアクティブ度を維持する必要がないため，評価のためのバッチサイズは少なくともトレーニング時のバッチサイズと同程度にする必要があり，1例あたりの計算量が少なくなります．
 -   定期的な評価は，時間間隔ではなく，一定のステップ間隔で行う必要があります．
@@ -850,6 +850,7 @@ trained on ImageNet.">
 </details>
 
 
+<a id="how-should-adams-hyperparameters-be-tuned"></a>
 ### Adamのハイパーパラメータはどのように調整されるべきか？
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -864,7 +865,7 @@ trained on ImageNet.">
 
 </details>
 
-
+<a id="why-use-quasi-random-search-instead-of-more-sophisticated-black-box-optimization-algorithms-during-the-exploration-phase-of-tuning"></a>
 ### チューニングの探索段階で，より洗練されたブラックボックス最適化アルゴリズムではなく，なぜ準ランダム探索を使うのでしょうか？
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -902,6 +903,8 @@ trained on ImageNet.">
 
 </details>
 
+
+<a id="how-many-trials-are-needed-to-get-good-results-with-quasi-random-search"></a>
 ### 準乱数探索で良い結果を得るためには，何回試行すればよいのでしょうか？
 <details><summary><em>[Click to expand]</em></summary>
 
@@ -920,6 +923,7 @@ trained on ImageNet.">
 
 </details>
 
+<a id="how-can-optimization-failures-be-debugged-and-mitigated"></a>
 ### 最適化の失敗をどのようにデバッグし，軽減することができるか？
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -996,6 +1000,8 @@ scale).">
 -   図7aは，最適化が不安定なモデルを示すハイパーパラメータ軸プロットで，最適な学習率が不安定になるぎりぎりのところにあることを示しています．
 -   図7bは，このピークよりも5倍または10倍大きな学習率で学習させたモデルの学習損失を調べることで，これをダブルチェックする方法を示しています．もしこのプロットが，一定の減少の後に損失が急激に増加している場合（例えば上の図の\~10kのステップ），そのモデルは最適化の不安定性に悩まされている可能性があります．
 
+
+<a id="How-to-apply-learning-rate-warmup"></a>
 #### 学習率ウォームアップの適用方法
 
 <p align="center">
@@ -1056,6 +1062,7 @@ scale).">
 </details>
 
 
+<a id="why-shouldnt-the-batch-size-be-tuned-to-directly-improve-validation-set-performance"></a>
 ### 検証セットの性能を直接向上させるために，バッチサイズを調整してはいけないのでしょうか？
 
 <details><summary><em>[Click to expand]</em></summary>
@@ -1070,6 +1077,7 @@ scale).">
 
 </details>
 
+<a id="what-are-the-update-rules-for-all-the-popular-optimization-algorithms"></a>
 ### 一般的な最適化アルゴリズムの更新ルールとは？
 
 
